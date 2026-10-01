@@ -1,0 +1,1515 @@
+zabbix_export:
+  version: '6.2'
+  template_groups:
+  - uuid: b0a7213f87444e5a8fe4b85b53c9bcd5
+    name: Templates/Redis Docker
+  templates:
+  - uuid: b05bae74cb9f43f8b5626a66970552d8
+    template: Redis Docker on Debian by passive agent
+    name: Redis Docker on Debian by passive agent
+    description: Passive Debian Docker Redis monitor v1.0.0. Requires rdm.collect
+      UserParameter + Python collector. Host metrics default off. Set HOST.ENABLED=1
+      to create optional host items; switch individual groups off to avoid duplicate
+      keys. See README.
+    groups:
+    - name: Templates/Redis Docker
+    items:
+    - uuid: f07e7be580b844929aea0b1c7e7b2ad8
+      name: 'Redis Docker: collector JSON'
+      type: ZABBIX_PASSIVE
+      key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      delay: 1m
+      history: 1d
+      trends: '0'
+      value_type: TEXT
+      tags:
+      - tag: component
+        value: collector
+    - uuid: 096874989b96475aafc5b5c50798ee29
+      name: 'Redis Docker: Collector successful'
+      type: DEPENDENT
+      key: rdm.collector_ok
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: collector
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.collector_ok
+        error_handler: DISCARD_VALUE
+    - uuid: bdd0f920e99a4971ad416aef1546509c
+      name: 'Redis Docker: Docker API reachable'
+      type: DEPENDENT
+      key: rdm.docker_ok
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.docker_ok
+        error_handler: DISCARD_VALUE
+    - uuid: 59b0ef3e8eb14cd98cdc34da6823f298
+      name: 'Redis Docker: Container running'
+      type: DEPENDENT
+      key: rdm.container_running
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.container_running
+        error_handler: DISCARD_VALUE
+    - uuid: 3fe3d0b8e54847a383c603a1df6ea6cc
+      name: 'Redis Docker: Container restart count'
+      type: DEPENDENT
+      key: rdm.container_restarts
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.container_restarts
+        error_handler: DISCARD_VALUE
+    - uuid: 9e950b07489645ae8813737e5fdf72d1
+      name: 'Redis Docker: Container health (none if not configured)'
+      type: DEPENDENT
+      key: rdm.container_health
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.container_health
+        error_handler: DISCARD_VALUE
+    - uuid: 016b385a0f384b1fa775e302a1c0b989
+      name: 'Redis Docker: Container ID'
+      type: DEPENDENT
+      key: rdm.container_id
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.container_id
+        error_handler: DISCARD_VALUE
+    - uuid: 1a4584d2264c43f7a2f6e1065255e47d
+      name: 'Redis Docker: Redis PING successful'
+      type: DEPENDENT
+      key: rdm.ping_ok
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.ping_ok
+        error_handler: DISCARD_VALUE
+    - uuid: f0f12d98ca914799ad8424ba5d2e768b
+      name: 'Redis Docker: Redis PING latency'
+      type: DEPENDENT
+      key: rdm.redis_ms
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.redis_ms
+        error_handler: DISCARD_VALUE
+      units: ms
+    - uuid: 96c20fd4ff0e4dc8933894a59b3e51ed
+      name: 'Redis Docker: Required filesystem mounted'
+      type: DEPENDENT
+      key: rdm.mount_ok
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.mount_ok
+        error_handler: DISCARD_VALUE
+    - uuid: 10a2f389216f4dffbc6752cd449a8669
+      name: 'Redis Docker: Expected writable bind mount to /data'
+      type: DEPENDENT
+      key: rdm.bind_ok
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.bind_ok
+        error_handler: DISCARD_VALUE
+    - uuid: 24c19fe1beae47a2adbc3d060cfaef79
+      name: 'Redis Docker: Filesystem read only'
+      type: DEPENDENT
+      key: rdm.fs_readonly
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.fs_readonly
+        error_handler: DISCARD_VALUE
+    - uuid: bb25d6a3a0ac446b8932c2d7d5933894
+      name: 'Redis Docker: Filesystem used'
+      type: DEPENDENT
+      key: rdm.fs_used_pct
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.fs_used_pct
+        error_handler: DISCARD_VALUE
+      units: '%'
+    - uuid: afd3338bd4524215a92efa0508108bf3
+      name: 'Redis Docker: Inodes used'
+      type: DEPENDENT
+      key: rdm.inode_used_pct
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.inode_used_pct
+        error_handler: DISCARD_VALUE
+      units: '%'
+    - uuid: dd4c5172aa7c46c988c4021a2fbc27ba
+      name: 'Redis Docker: Filesystem available bytes'
+      type: DEPENDENT
+      key: rdm.fs_free
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: filesystem
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.fs_free
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: 61119f375f8241dcbbed3ddcd3aa391b
+      name: 'Redis Docker: Collector error'
+      type: DEPENDENT
+      key: rdm.error
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: TEXT
+      tags:
+      - tag: component
+        value: collector
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.error
+        error_handler: DISCARD_VALUE
+    - uuid: 9ecc05ad86fe42ccbb0be2b9319e4bf1
+      name: 'Redis Docker: uptime in seconds'
+      type: DEPENDENT
+      key: rdm.info.uptime_in_seconds
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.uptime_in_seconds
+        error_handler: DISCARD_VALUE
+    - uuid: 420eaf2c504b4959839b0e9da8323c5e
+      name: 'Redis Docker: connected clients'
+      type: DEPENDENT
+      key: rdm.info.connected_clients
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.connected_clients
+        error_handler: DISCARD_VALUE
+    - uuid: 4c38c7b0099649958a57f511551b7bca
+      name: 'Redis Docker: blocked clients'
+      type: DEPENDENT
+      key: rdm.info.blocked_clients
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.blocked_clients
+        error_handler: DISCARD_VALUE
+    - uuid: 4994dd7bad4b45ed9a151360945daa42
+      name: 'Redis Docker: maxclients'
+      type: DEPENDENT
+      key: rdm.info.maxclients
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.maxclients
+        error_handler: DISCARD_VALUE
+    - uuid: 816e1b4dd5844ca1bdb55946ea78d8ef
+      name: 'Redis Docker: rejected connections'
+      type: DEPENDENT
+      key: rdm.info.rejected_connections
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.rejected_connections
+        error_handler: DISCARD_VALUE
+    - uuid: 9b395efcae6643acbfa37a909f3c8ba6
+      name: 'Redis Docker: used memory'
+      type: DEPENDENT
+      key: rdm.info.used_memory
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.used_memory
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: 3bbbbbd67868432c91333af4787f1c45
+      name: 'Redis Docker: used memory rss'
+      type: DEPENDENT
+      key: rdm.info.used_memory_rss
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.used_memory_rss
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: 7d7490e2c11e438a94e22311c11be111
+      name: 'Redis Docker: maxmemory'
+      type: DEPENDENT
+      key: rdm.info.maxmemory
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.maxmemory
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: ae07b53337ac41ba86c3a883a42c677d
+      name: 'Redis Docker: evicted keys'
+      type: DEPENDENT
+      key: rdm.info.evicted_keys
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.evicted_keys
+        error_handler: DISCARD_VALUE
+    - uuid: e9799f1683dd4c8491a30a5298b37739
+      name: 'Redis Docker: expired keys'
+      type: DEPENDENT
+      key: rdm.info.expired_keys
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.expired_keys
+        error_handler: DISCARD_VALUE
+    - uuid: d02f233af07a438b8131076b8194fd46
+      name: 'Redis Docker: keyspace hits'
+      type: DEPENDENT
+      key: rdm.info.keyspace_hits
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.keyspace_hits
+        error_handler: DISCARD_VALUE
+    - uuid: 885759ab3ff24e3fae6ebbfe2283d1d1
+      name: 'Redis Docker: keyspace misses'
+      type: DEPENDENT
+      key: rdm.info.keyspace_misses
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.keyspace_misses
+        error_handler: DISCARD_VALUE
+    - uuid: 82eda1ef77da4e37860e788295ea5ac7
+      name: 'Redis Docker: instantaneous ops per sec'
+      type: DEPENDENT
+      key: rdm.info.instantaneous_ops_per_sec
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.instantaneous_ops_per_sec
+        error_handler: DISCARD_VALUE
+    - uuid: 94842447a9064ecfb9ad99a6423b3292
+      name: 'Redis Docker: total commands processed'
+      type: DEPENDENT
+      key: rdm.info.total_commands_processed
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.total_commands_processed
+        error_handler: DISCARD_VALUE
+    - uuid: 43c0a47c04494c8cac96a1cfa58dff13
+      name: 'Redis Docker: total connections received'
+      type: DEPENDENT
+      key: rdm.info.total_connections_received
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.total_connections_received
+        error_handler: DISCARD_VALUE
+    - uuid: a3ae2f513be143da8ebc887f21b1f1a0
+      name: 'Redis Docker: latest fork usec'
+      type: DEPENDENT
+      key: rdm.info.latest_fork_usec
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.latest_fork_usec
+        error_handler: DISCARD_VALUE
+    - uuid: fa7254801416402a8f2caf6d32b9a41b
+      name: 'Redis Docker: rdb last save time'
+      type: DEPENDENT
+      key: rdm.info.rdb_last_save_time
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.rdb_last_save_time
+        error_handler: DISCARD_VALUE
+    - uuid: 1f4277fbe6ca48dfadd1fc20b2e55f14
+      name: 'Redis Docker: rdb changes since last save'
+      type: DEPENDENT
+      key: rdm.info.rdb_changes_since_last_save
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.rdb_changes_since_last_save
+        error_handler: DISCARD_VALUE
+    - uuid: dcf87454bf634bbe8cdbe31e43a8745e
+      name: 'Redis Docker: aof enabled'
+      type: DEPENDENT
+      key: rdm.info.aof_enabled
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_enabled
+        error_handler: DISCARD_VALUE
+    - uuid: c8600cb59f004ada93a56962295fe145
+      name: 'Redis Docker: aof rewrite in progress'
+      type: DEPENDENT
+      key: rdm.info.aof_rewrite_in_progress
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_rewrite_in_progress
+        error_handler: DISCARD_VALUE
+    - uuid: f2ad83b271de4cb198bb69e749b5cfdd
+      name: 'Redis Docker: aof current size'
+      type: DEPENDENT
+      key: rdm.info.aof_current_size
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_current_size
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: 7cf15db45f4a49ecba38527e54b93761
+      name: 'Redis Docker: aof base size'
+      type: DEPENDENT
+      key: rdm.info.aof_base_size
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_base_size
+        error_handler: DISCARD_VALUE
+      units: B
+    - uuid: 92efa3e4cf3d4eda9e77484cedfbd80e
+      name: 'Redis Docker: aof delayed fsync'
+      type: DEPENDENT
+      key: rdm.info.aof_delayed_fsync
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_delayed_fsync
+        error_handler: DISCARD_VALUE
+    - uuid: 7d41ef0682cb46e98d9711c8ae085871
+      name: 'Redis Docker: loading'
+      type: DEPENDENT
+      key: rdm.info.loading
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: UNSIGNED
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.loading
+        error_handler: DISCARD_VALUE
+    - uuid: 2f398dd458b046e6bd65fbbecb7fcd6b
+      name: 'Redis Docker: Memory fragmentation ratio'
+      type: DEPENDENT
+      key: rdm.info.mem_fragmentation_ratio
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.mem_fragmentation_ratio
+        error_handler: DISCARD_VALUE
+    - uuid: 39c0a9978387492fb5147d10f3a938da
+      name: 'Redis Docker: rdb last bgsave status'
+      type: DEPENDENT
+      key: rdm.info.rdb_last_bgsave_status
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: persistence
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.rdb_last_bgsave_status
+        error_handler: DISCARD_VALUE
+    - uuid: 8b51456fc4b14c54973066df3aa161bd
+      name: 'Redis Docker: aof last write status'
+      type: DEPENDENT
+      key: rdm.info.aof_last_write_status
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: persistence
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_last_write_status
+        error_handler: DISCARD_VALUE
+    - uuid: 30f5413ed8f14b75971a424bcff7fd8d
+      name: 'Redis Docker: aof last bgrewrite status'
+      type: DEPENDENT
+      key: rdm.info.aof_last_bgrewrite_status
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: persistence
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.aof_last_bgrewrite_status
+        error_handler: DISCARD_VALUE
+    - uuid: d0e4cee9c192499bb7018efce11446c7
+      name: 'Redis Docker: redis version'
+      type: DEPENDENT
+      key: rdm.info.redis_version
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: persistence
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.redis_version
+        error_handler: DISCARD_VALUE
+    - uuid: 526ea44362f24c73b2a519ec7c18ee73
+      name: 'Redis Docker: role'
+      type: DEPENDENT
+      key: rdm.info.role
+      delay: '0'
+      history: 7d
+      trends: '0'
+      value_type: CHAR
+      tags:
+      - tag: component
+        value: persistence
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.info.role
+        error_handler: DISCARD_VALUE
+    - uuid: dd9c0746b8d74a89b45185743f69b600
+      name: 'Redis Docker: Redis maxmemory used (only if maxmemory > 0)'
+      type: DEPENDENT
+      key: rdm.memory_used_pct
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.memory_used_pct
+        error_handler: DISCARD_VALUE
+      units: '%'
+    - uuid: 167d3348f0eb44f986b47ce2043ff352
+      name: 'Redis Docker: Redis maxclients used'
+      type: DEPENDENT
+      key: rdm.clients_used_pct
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.clients_used_pct
+        error_handler: DISCARD_VALUE
+      units: '%'
+    - uuid: 1a0c847f5d96419a9c93a5a73da7825f
+      name: 'Redis Docker: Cache hit ratio, lifetime'
+      type: DEPENDENT
+      key: rdm.hit_ratio
+      delay: '0'
+      history: 7d
+      trends: 365d
+      value_type: FLOAT
+      tags:
+      - tag: component
+        value: redis
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+      preprocessing:
+      - type: JSONPATH
+        parameters:
+        - $.hit_ratio
+        error_handler: DISCARD_VALUE
+      units: '%'
+    discovery_rules:
+    - uuid: 1fd4fa9076604818afc6862fd5a80fe3
+      name: 'Redis host: optional CPU'
+      type: DEPENDENT
+      key: rdm.host.discovery.cpu
+      delay: '0'
+      lifetime: '0'
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'if ("{$REDIS.HOST.ENABLED}" !== "1" || "{$REDIS.HOST.CPU.ENABLED}" !==
+          "1") return "[]"; return JSON.stringify([{ "{#SCOPE}": "host", "{#CPU}":
+          "all", "{#PAVAILABLE}": "pavailable", "{#AVAILABLE}": "available" }]);'
+      item_prototypes:
+      - uuid: 972d322a0d654568bc40920186794981
+        name: 'Redis host: CPU utilization'
+        type: ZABBIX_PASSIVE
+        key: system.cpu.util[{#CPU},idle]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        units: '%'
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return 100 - Number(value);
+      - uuid: 2ac35d9ce3a7458893b9628769fc432e
+        name: 'Redis host: Load average 1m'
+        type: ZABBIX_PASSIVE
+        key: system.cpu.load[{#CPU},avg1]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        units: ''
+      trigger_prototypes:
+      - uuid: 876dffab8efc41fc8bc0114e4a660d9e
+        expression: min(/Redis Docker on Debian by passive agent/system.cpu.util[{#CPU},idle],5m)>{$REDIS.HOST.CPU.WARN}
+        name: 'Redis host: CPU usage high'
+        priority: WARNING
+        tags:
+        - tag: component
+          value: redis-docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+    - uuid: ef65414293004ef29f893f02ed913d80
+      name: 'Redis host: optional MEMORY'
+      type: DEPENDENT
+      key: rdm.host.discovery.memory
+      delay: '0'
+      lifetime: '0'
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'if ("{$REDIS.HOST.ENABLED}" !== "1" || "{$REDIS.HOST.MEMORY.ENABLED}" !==
+          "1") return "[]"; return JSON.stringify([{ "{#SCOPE}": "host", "{#CPU}":
+          "all", "{#PAVAILABLE}": "pavailable", "{#AVAILABLE}": "available" }]);'
+      item_prototypes:
+      - uuid: 3a7ee3ed2bf7478e8d96e5939b6064d3
+        name: 'Redis host: Memory used'
+        type: ZABBIX_PASSIVE
+        key: vm.memory.size[{#PAVAILABLE}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        units: '%'
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return 100 - Number(value);
+      - uuid: bda4884f3d09423a9d85194c3ae6046d
+        name: 'Redis host: Available memory'
+        type: ZABBIX_PASSIVE
+        key: vm.memory.size[{#AVAILABLE}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: UNSIGNED
+        tags:
+        - tag: component
+          value: host
+        units: B
+      trigger_prototypes:
+      - uuid: ba1b485515aa4759bd9356de0d530439
+        expression: min(/Redis Docker on Debian by passive agent/vm.memory.size[{#PAVAILABLE}],5m)>{$REDIS.HOST.MEMORY.WARN}
+        name: 'Redis host: MEMORY usage high'
+        priority: WARNING
+        tags:
+        - tag: component
+          value: redis-docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+    - uuid: cba9c7111ec74a56a0753530abdaab24
+      name: 'Redis host: optional SWAP'
+      type: DEPENDENT
+      key: rdm.host.discovery.swap
+      delay: '0'
+      lifetime: '0'
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - 'if ("{$REDIS.HOST.ENABLED}" !== "1" || "{$REDIS.HOST.SWAP.ENABLED}" !==
+          "1") return "[]"; return JSON.stringify([{ "{#SCOPE}": "host", "{#CPU}":
+          "all", "{#PAVAILABLE}": "pavailable", "{#AVAILABLE}": "available" }]);'
+      item_prototypes:
+      - uuid: 238a1f6b2ad74714bcde72d5db0ab75b
+        name: 'Redis host: Swap used'
+        type: ZABBIX_PASSIVE
+        key: system.swap.size[{#CPU},pused]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        units: '%'
+      trigger_prototypes:
+      - uuid: ee26f1f7bf344e9a88207a3a3788295d
+        expression: min(/Redis Docker on Debian by passive agent/system.swap.size[{#CPU},pused],5m)>{$REDIS.HOST.SWAP.WARN}
+        name: 'Redis host: SWAP usage high'
+        priority: WARNING
+        tags:
+        - tag: component
+          value: redis-docker
+      master_item:
+        key: rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"]
+    - uuid: 7371d780df874cb682e03ef694c7d52b
+      name: 'Redis host: optional network'
+      type: ZABBIX_PASSIVE
+      key: rdm.net.discovery["{$REDIS.HOST.ENABLED}","{$REDIS.HOST.NETWORK.ENABLED}"]
+      delay: 5m
+      lifetime: '0'
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - if ("{$REDIS.HOST.ENABLED}" !== "1" || "{$REDIS.HOST.NETWORK.ENABLED}" !==
+          "1") return "[]"; return value;
+      filter:
+        evaltype: AND
+        conditions:
+        - macro: '{#IFNAME}'
+          value: '{$REDIS.HOST.IF.REGEX}'
+          operator: MATCHES_REGEX
+          formulaid: A
+      item_prototypes:
+      - uuid: bac271a7f7074924b70dec4649c11e00
+        name: 'Redis host: {#IFNAME} in bytes'
+        type: ZABBIX_PASSIVE
+        key: net.if.in["{#IFNAME}",bytes]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: Bps
+      - uuid: 5de6d66c17914dabb6658c3d49dd3198
+        name: 'Redis host: {#IFNAME} in errors'
+        type: ZABBIX_PASSIVE
+        key: net.if.in["{#IFNAME}",errors]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ''
+      - uuid: 1b8782de912841958f73b3cd083f0120
+        name: 'Redis host: {#IFNAME} in dropped'
+        type: ZABBIX_PASSIVE
+        key: net.if.in["{#IFNAME}",dropped]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ''
+      - uuid: 3d34e191400f42bfa4e820a7fb3407d1
+        name: 'Redis host: {#IFNAME} out bytes'
+        type: ZABBIX_PASSIVE
+        key: net.if.out["{#IFNAME}",bytes]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: Bps
+      - uuid: 47f1e59ac6d74102856b2bc8de9817a8
+        name: 'Redis host: {#IFNAME} out errors'
+        type: ZABBIX_PASSIVE
+        key: net.if.out["{#IFNAME}",errors]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ''
+      - uuid: 15e666dcfe644943ab2f2fb26ffcb1e6
+        name: 'Redis host: {#IFNAME} out dropped'
+        type: ZABBIX_PASSIVE
+        key: net.if.out["{#IFNAME}",dropped]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        preprocessing:
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ''
+    - uuid: e4e252ae43ad41978e4cf7104110c7a8
+      name: 'Redis host: optional disk IO'
+      type: ZABBIX_PASSIVE
+      key: rdm.disk.discovery["{$REDIS.HOST.ENABLED}","{$REDIS.HOST.DISK.ENABLED}"]
+      delay: 5m
+      lifetime: '0'
+      preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - if ("{$REDIS.HOST.ENABLED}" !== "1" || "{$REDIS.HOST.DISK.ENABLED}" !==
+          "1") return "[]"; return value;
+      filter:
+        evaltype: AND
+        conditions:
+        - macro: '{#DEVNAME}'
+          value: '{$REDIS.HOST.DEV.REGEX}'
+          operator: MATCHES_REGEX
+          formulaid: A
+      item_prototypes:
+      - uuid: 69f117d6afaf469498134d82dd1e1dbd
+        name: 'Redis host: {#DEVNAME} raw disk statistics'
+        type: ZABBIX_PASSIVE
+        key: vfs.file.contents[/sys/block/{#DEVNAME}/stat]
+        delay: 1m
+        history: 1d
+        trends: '0'
+        value_type: TEXT
+        tags:
+        - tag: component
+          value: host
+      - uuid: f75ccca6fa4e414ba7df44160f6e8c47
+        name: 'Redis host: {#DEVNAME} read ops rate'
+        type: DEPENDENT
+        key: rdm.host.disk.read.ops[{#DEVNAME}]
+        delay: '0'
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        master_item:
+          key: vfs.file.contents[/sys/block/{#DEVNAME}/stat]
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return Number(value.trim().split(/\s+/)[0]);
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ops/s
+      - uuid: c4945c8451374ecb87e8565f642ce8a9
+        name: 'Redis host: {#DEVNAME} read time rate'
+        type: DEPENDENT
+        key: rdm.host.disk.read.time[{#DEVNAME}]
+        delay: '0'
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        master_item:
+          key: vfs.file.contents[/sys/block/{#DEVNAME}/stat]
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return Number(value.trim().split(/\s+/)[3]);
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ms/s
+      - uuid: adc648501e8246e2b64acd170a411abd
+        name: 'Redis host: {#DEVNAME} read average latency'
+        type: CALCULATED
+        key: rdm.host.disk.read.await[{#DEVNAME}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        params: last(//rdm.host.disk.read.time[{#DEVNAME}])/(last(//rdm.host.disk.read.ops[{#DEVNAME}])+(last(//rdm.host.disk.read.ops[{#DEVNAME}])=0))
+        units: ms
+      - uuid: 18f61b4f50b74727870d613840862ec4
+        name: 'Redis host: {#DEVNAME} write ops rate'
+        type: DEPENDENT
+        key: rdm.host.disk.write.ops[{#DEVNAME}]
+        delay: '0'
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        master_item:
+          key: vfs.file.contents[/sys/block/{#DEVNAME}/stat]
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return Number(value.trim().split(/\s+/)[4]);
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ops/s
+      - uuid: 4090ce601d2b4cb88c2c977ae8d38dc9
+        name: 'Redis host: {#DEVNAME} write time rate'
+        type: DEPENDENT
+        key: rdm.host.disk.write.time[{#DEVNAME}]
+        delay: '0'
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        master_item:
+          key: vfs.file.contents[/sys/block/{#DEVNAME}/stat]
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - return Number(value.trim().split(/\s+/)[7]);
+        - type: CHANGE_PER_SECOND
+          parameters: []
+        units: ms/s
+      - uuid: cfd360e421824f91a2a7769565124142
+        name: 'Redis host: {#DEVNAME} write average latency'
+        type: CALCULATED
+        key: rdm.host.disk.write.await[{#DEVNAME}]
+        delay: 1m
+        history: 7d
+        trends: 365d
+        value_type: FLOAT
+        tags:
+        - tag: component
+          value: host
+        params: last(//rdm.host.disk.write.time[{#DEVNAME}])/(last(//rdm.host.disk.write.ops[{#DEVNAME}])+(last(//rdm.host.disk.write.ops[{#DEVNAME}])=0))
+        units: ms
+      trigger_prototypes:
+      - uuid: 168fb24652004b059ca53eefd383ab05
+        expression: min(/Redis Docker on Debian by passive agent/rdm.host.disk.write.await[{#DEVNAME}],5m)>{$REDIS.HOST.DISK.LATENCY.WARN}
+        name: 'Redis host: {#DEVNAME} disk write latency high'
+        priority: WARNING
+        tags:
+        - tag: component
+          value: redis-docker
+    macros:
+    - macro: '{$REDIS.CONTAINER}'
+      value: redis
+    - macro: '{$REDIS.DATA.PATH}'
+      value: /mnt/web-redis/data
+    - macro: '{$REDIS.MOUNT.PATH}'
+      value: /mnt/web-redis
+    - macro: '{$REDIS.PORT}'
+      value: '6379'
+    - macro: '{$REDIS.HOST.ENABLED}'
+      value: '0'
+    - macro: '{$REDIS.HOST.CPU.ENABLED}'
+      value: '1'
+    - macro: '{$REDIS.HOST.MEMORY.ENABLED}'
+      value: '1'
+    - macro: '{$REDIS.HOST.SWAP.ENABLED}'
+      value: '1'
+    - macro: '{$REDIS.HOST.NETWORK.ENABLED}'
+      value: '0'
+    - macro: '{$REDIS.HOST.IF.REGEX}'
+      value: ^(eth[0-9]+|en[a-zA-Z0-9]+)$
+    - macro: '{$REDIS.AOF.REQUIRED}'
+      value: '1'
+    - macro: '{$REDIS.EVICTION.ALERT}'
+      value: '0'
+    - macro: '{$REDIS.MEMORY.WARN}'
+      value: '80'
+    - macro: '{$REDIS.DISK.WARN}'
+      value: '75'
+    - macro: '{$REDIS.DISK.CRIT}'
+      value: '90'
+    - macro: '{$REDIS.CLIENTS.WARN}'
+      value: '80'
+    - macro: '{$REDIS.HOST.CPU.WARN}'
+      value: '90'
+    - macro: '{$REDIS.HOST.MEMORY.WARN}'
+      value: '90'
+    - macro: '{$REDIS.HOST.SWAP.WARN}'
+      value: '20'
+    - macro: '{$REDIS.HOST.DISK.ENABLED}'
+      value: '0'
+    - macro: '{$REDIS.HOST.DEV.REGEX}'
+      value: ^(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+)$
+    - macro: '{$REDIS.HOST.DISK.LATENCY.WARN}'
+      value: '50'
+  triggers:
+  - uuid: 63d5b2b10a9d46f194b3b2d84eda6d7e
+    expression: nodata(/Redis Docker on Debian by passive agent/rdm.collect["{$REDIS.CONTAINER}","{$REDIS.DATA.PATH}","{$REDIS.MOUNT.PATH}","{$REDIS.PORT}"],5m)=1
+    name: 'Redis Docker: no collector data'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 52c7bb6638894b3e9a6f0801d3ceb2e6
+    expression: max(/Redis Docker on Debian by passive agent/rdm.collector_ok,3m)=0
+    name: 'Redis Docker: collection failed'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: a3442448b79b452eb4e020ccb364e13b
+    expression: max(/Redis Docker on Debian by passive agent/rdm.docker_ok,3m)=0
+    name: 'Redis Docker: Docker API unavailable'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 4ede2c8535ab432c86f828dd4666cdcc
+    expression: max(/Redis Docker on Debian by passive agent/rdm.container_running,3m)=0
+    name: 'Redis Docker: container stopped or missing'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: a8ab7c4d47c2444ca5f79c4fc77e371b
+    expression: max(/Redis Docker on Debian by passive agent/rdm.ping_ok,3m)=0
+    name: 'Redis Docker: Redis PING failed'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 4a342ccc903c48bdb194d5e9b4389cf7
+    expression: max(/Redis Docker on Debian by passive agent/rdm.mount_ok,3m)=0
+    name: 'Redis Docker: required filesystem missing'
+    priority: DISASTER
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 2251a9adbf904c9fa4a21bb664933e1f
+    expression: max(/Redis Docker on Debian by passive agent/rdm.bind_ok,3m)=0
+    name: 'Redis Docker: /data bind mount mismatch or not writable'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 60e68105bca44f50a7dfed92a6f0d3c9
+    expression: last(/Redis Docker on Debian by passive agent/rdm.fs_readonly)=1
+    name: 'Redis Docker: data filesystem read only'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 75aafd04beb641e8896de580d81fe5a1
+    expression: last(/Redis Docker on Debian by passive agent/rdm.container_health)="unhealthy"
+    name: 'Redis Docker: container unhealthy'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 326b65d0045648eaa68daef8c99e9399
+    expression: change(/Redis Docker on Debian by passive agent/rdm.container_restarts)>0
+    name: 'Redis Docker: container restarted'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 06a8f5516e2d4f9998454f15becd5135
+    expression: change(/Redis Docker on Debian by passive agent/rdm.container_id)=1
+    name: 'Redis Docker: container recreated'
+    priority: INFO
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 911d532d8a5c4be2b5802c1358c6d059
+    expression: min(/Redis Docker on Debian by passive agent/rdm.fs_used_pct,5m)>{$REDIS.DISK.CRIT}
+    name: 'Redis Docker: data filesystem usage critical'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: f143d43ac409488fae8166ca530a0a9f
+    expression: min(/Redis Docker on Debian by passive agent/rdm.fs_used_pct,5m)>{$REDIS.DISK.WARN}
+      and max(/Redis Docker on Debian by passive agent/rdm.fs_used_pct,5m)<={$REDIS.DISK.CRIT}
+    name: 'Redis Docker: data filesystem usage high'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 1cc0a5e39cc840c8b04a1ce90b9d7ec7
+    expression: min(/Redis Docker on Debian by passive agent/rdm.inode_used_pct,5m)>{$REDIS.DISK.CRIT}
+    name: 'Redis Docker: inodes usage critical'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 8d70252cf66d44a4b4f604271f44f8ad
+    expression: min(/Redis Docker on Debian by passive agent/rdm.inode_used_pct,5m)>{$REDIS.DISK.WARN}
+      and max(/Redis Docker on Debian by passive agent/rdm.inode_used_pct,5m)<={$REDIS.DISK.CRIT}
+    name: 'Redis Docker: inodes usage high'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 9ae1c92203d64a9698bd7614d5463a12
+    expression: last(/Redis Docker on Debian by passive agent/rdm.info.aof_last_write_status)="err"
+      and last(/Redis Docker on Debian by passive agent/rdm.info.aof_enabled)=1
+    name: 'Redis Docker: aof_last_write_status is err'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 1d109e46eb664b749c75d161281c27d2
+    expression: last(/Redis Docker on Debian by passive agent/rdm.info.aof_last_bgrewrite_status)="err"
+      and last(/Redis Docker on Debian by passive agent/rdm.info.aof_enabled)=1
+    name: 'Redis Docker: aof_last_bgrewrite_status is err'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: a5868c57cc9a41e2914873de614487b6
+    expression: last(/Redis Docker on Debian by passive agent/rdm.info.rdb_last_bgsave_status)="err"
+    name: 'Redis Docker: rdb_last_bgsave_status is err'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 6e65d6a9d25b44429d196f26928e0510
+    expression: '{$REDIS.AOF.REQUIRED}=1 and last(/Redis Docker on Debian by passive
+      agent/rdm.info.aof_enabled)=0'
+    name: 'Redis Docker: required AOF disabled'
+    priority: HIGH
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 3375a20e7b024612af975b716d6aa398
+    expression: '{$REDIS.EVICTION.ALERT}=1 and change(/Redis Docker on Debian by passive
+      agent/rdm.info.evicted_keys)>0'
+    name: 'Redis Docker: keys evicted'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 95012b0f0eb8482685a6ce52343a1154
+    expression: change(/Redis Docker on Debian by passive agent/rdm.info.rejected_connections)>0
+    name: 'Redis Docker: rejected connections increased'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 135ee2517ad54cbba8dff22d4070e978
+    expression: change(/Redis Docker on Debian by passive agent/rdm.info.aof_delayed_fsync)>0
+    name: 'Redis Docker: delayed AOF fsync increased'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: 51b3b3de7a6f4bd58bf5d12908428458
+    expression: min(/Redis Docker on Debian by passive agent/rdm.memory_used_pct,5m)>{$REDIS.MEMORY.WARN}
+    name: 'Redis Docker: maxmemory usage high'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  - uuid: fdad8879bd09463aa84b7408e9875fe5
+    expression: min(/Redis Docker on Debian by passive agent/rdm.clients_used_pct,5m)>{$REDIS.CLIENTS.WARN}
+    name: 'Redis Docker: clients near maxclients'
+    priority: WARNING
+    tags:
+    - tag: component
+      value: redis-docker
+  date: '2026-10-01T09:50:00Z'

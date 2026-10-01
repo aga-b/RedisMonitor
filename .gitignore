@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+redis-auth.json
+redis-docker/*.json
+*.zip
